@@ -16,25 +16,44 @@ inputFile.close()
 # Create the file with the output data
 outputFile = open('data\data.csv', 'w', newline='')
 writer = csv.writer(outputFile)
-data = []
+writer.writerow(('latitude', 'longitude'))
 
 # Function to deploy model
 def getPredictions(image):
     result = model.predict(f'images\{image["name"]}.jpg')
-    result.save(f'data\{image["name"]}.jpg')
+    # result.save(f'data\{image["name"]}.jpg')
+
     return result.json()
 
 # Function to calculate the image dimensions in degrees.
 def getDimensions(image):
     height = abs(image['location'][0][0] - image['location'][1][0]) * 2
     width = abs(image['location'][0][1] - image['location'][1][1]) * 2
+
     return (height, width)
 
 # Function to match prediction coordinates to GPS coordinates in decimal degrees
 def getCoordinates(image, prediction, height, width):
-    latitude = image['location'][1][0] + height - (prediction['y'] / image['height'] * height)
-    longitude = image['location'][1][1] - width + (prediction['x'] / image['width'] * width)
-    return (round(latitude, 6), round(longitude, 6))
+    coordinates = []
+
+    latitude = round(image['location'][1][0] + height - (prediction['y'] / image['height'] * height), 6)
+    longitude = round(image['location'][1][1] - width + (prediction['x'] / image['width'] * width), 6)
+    coordinates.append((latitude, longitude))
+
+    predictionHeight = prediction['height'] / image['height'] * height
+    predictionWidth = prediction['width'] / image['width'] * height
+
+    latitude = round(coordinates[0][0] + predictionHeight / 2, 6)
+    longitude = round(coordinates[0][1] - predictionWidth / 2, 6)
+    coordinates.append((latitude, longitude))
+
+    latitude = round(coordinates[0][0] - predictionHeight / 2, 6)
+    longitude = round(coordinates[0][1] + predictionWidth / 2, 6)
+    coordinates.append((latitude, longitude))
+
+    print(tuple(coordinates))
+
+    return tuple(coordinates)
 
 # Loop for every image
 for image in images:
@@ -44,9 +63,7 @@ for image in images:
     (height, width) = getDimensions(image)
     for prediction in predictions:
         coordinates = getCoordinates(image, prediction, height, width)
-        data.append(coordinates)
+        # Output coordinates
+        writer.writerows(coordinates)
 
-# Output data
-writer.writerow(('latitude', 'longitude'))
-writer.writerows(data)
 outputFile.close()
