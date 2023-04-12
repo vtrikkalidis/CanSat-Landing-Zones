@@ -21,7 +21,7 @@ writer.writerow(('latitude', 'longitude'))
 # Function to deploy model
 def getPredictions(image):
     result = model.predict(f'images\{image["name"]}.jpg')
-    # result.save(f'data\{image["name"]}.jpg')
+    result.save(f'data\{image["name"]}.jpg')
 
     return result.json()
 
@@ -65,5 +65,6 @@ for image in images:
         coordinates = getCoordinates(image, prediction, height, width)
         # Output coordinates
         writer.writerows(coordinates)
+        # writer.writerow(coordinates[0])
 
 outputFile.close()
