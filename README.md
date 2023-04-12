@@ -59,8 +59,10 @@ The *`data`* folder will contain:
 
 ```csv
 latitude,longitude
-38.054009,23.317695
-38.053956,23.323509
+38.055183,23.31787
+38.055326,23.317708
+38.05504,23.318032
+38.053507,23.320615
 ```
 
 - the new pictures with the predictions, with a *`.jpg`* extension.
