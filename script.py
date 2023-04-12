@@ -51,8 +51,6 @@ def getCoordinates(image, prediction, height, width):
     longitude = round(coordinates[0][1] + predictionWidth / 2, 6)
     coordinates.append((latitude, longitude))
 
-    print(tuple(coordinates))
-
     return tuple(coordinates)
 
 # Loop for every image
